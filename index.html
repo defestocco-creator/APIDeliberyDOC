@@ -641,8 +641,8 @@
                     <p>Suporte a pedidos de entrega e retirada com o campo <code>tipoPedido</code>.</p>
                 </div>
                 <div class="feature-card">
-                    <h4><i class="fas fa-check-circle"></i> Validação</h4>
-                    <p>Validação robusta de dados de entrada com respostas de erro detalhadas.</p>
+                    <h4><i class="fas fa-hashtag"></i> ID do Cliente</h4>
+                    <p>Campo <code>id</code> enviado pelo cliente para identificação única do pedido.</p>
                 </div>
             </div>
         </section>
@@ -788,7 +788,7 @@
                 </div>
                 <div class="endpoint-description">
                     <p>Cria um novo pedido manual no sistema. O pedido é automaticamente armazenado na pasta do dia atual no Firebase.</p>
-                    <p><strong>Novo:</strong> Campo <code>tipoPedido</code> para definir se é <code>Entrega</code> ou <code>Retirada</code>.</p>
+                    <p><strong>Importante:</strong> O campo <code>id</code> deve ser enviado pelo cliente para identificar unicamente cada pedido.</p>
                 </div>
                 
                 <div class="request-response">
@@ -806,13 +806,13 @@ Content-Type: application/json</code></pre>
                             
                             <h4>Corpo da Requisição</h4>
                             <pre><code>{
+  "id": 1001,
   "cliente": "João Silva",
   "telefone": "11999999999",
   "pagamento": "Pix",
   "taxa": 5,
   "valor_total": 42.90,
   "tipoPedido": "Entrega",
-  "id": "0",
   "endereco": {
     "rua": "Rua das Flores",
     "numero": "123",
@@ -837,9 +837,10 @@ Content-Type: application/json</code></pre>
                             <h4>Resposta de Sucesso (201 Created)</h4>
                             <pre><code>{
   "ok": true,
-  "firebase_id": "-Nr98h12ad9", ///ID FIREBASE PEDIDO///
+  "firebase_id": "-Nr98h12ad9",
   "pasta": "PEDIDOS_MANUAIS_26112025",
   "pedido": {
+    "id": 1001,
     "cliente": "João Silva",
     "endereco": {
       "bairro": "Centro",
@@ -848,7 +849,6 @@ Content-Type: application/json</code></pre>
       "rua": "Rua das Flores"
     },
     "estimatedDeliveryMinutes": 30,
-    "id": "0", ///ORDEM DO PEDIDO///
     "tipoPedido": "Entrega",
     "motoboy": {
       "id": "mb001",
@@ -888,82 +888,100 @@ Content-Type: application/json</code></pre>
                                 </thead>
                                 <tbody>
                                     <tr>
+                                        <td>id <span class="update-badge">OBRIGATÓRIO</span></td>
+                                        <td class="type">number</td>
+                                        <td class="required">✅ Sim</td>
+                                        <td>ID único do pedido enviado pelo cliente (número inteiro)</td>
+                                    </tr>
+                                    <tr>
                                         <td>cliente</td>
                                         <td class="type">string</td>
-                                        <td class="required">Sim</td>
+                                        <td class="required">✅ Sim</td>
                                         <td>Nome do cliente</td>
                                     </tr>
                                     <tr>
                                         <td>telefone</td>
                                         <td class="type">string</td>
-                                        <td>Não</td>
+                                        <td>❌ Não</td>
                                         <td>Telefone do cliente</td>
                                     </tr>
                                     <tr>
                                         <td>pagamento</td>
                                         <td class="type">string</td>
-                                        <td>Não</td>
+                                        <td>❌ Não</td>
                                         <td>Forma de pagamento (Pix, Cartão, Dinheiro, Outros)</td>
                                     </tr>
                                     <tr>
                                         <td>taxa</td>
                                         <td class="type">number</td>
-                                        <td>Não</td>
+                                        <td>❌ Não</td>
                                         <td>Taxa de entrega</td>
                                     </tr>
                                     <tr>
                                         <td>valor_total</td>
                                         <td class="type">number</td>
-                                        <td>Não</td>
+                                        <td>❌ Não</td>
                                         <td>Valor total do pedido</td>
                                     </tr>
                                     <tr>
-                                        <td>tipoPedido <span class="update-badge">NOVO</span></td>
+                                        <td>tipoPedido</td>
                                         <td class="type">string</td>
-                                        <td>Não</td>
+                                        <td>❌ Não</td>
                                         <td>Tipo do pedido: "Entrega" ou "Retirada" (padrão: "Entrega")</td>
                                     </tr>
                                     <tr>
                                         <td>endereco</td>
                                         <td class="type">object</td>
-                                        <td class="required">Sim</td>
+                                        <td class="required">✅ Sim</td>
                                         <td>Endereço de entrega (obrigatório mesmo para retirada)</td>
                                     </tr>
                                     <tr>
                                         <td>endereco.rua</td>
                                         <td class="type">string</td>
-                                        <td>Não</td>
+                                        <td>❌ Não</td>
                                         <td>Nome da rua</td>
                                     </tr>
                                     <tr>
                                         <td>endereco.numero</td>
                                         <td class="type">string</td>
-                                        <td>Não</td>
+                                        <td>❌ Não</td>
                                         <td>Número do endereço</td>
                                     </tr>
                                     <tr>
                                         <td>endereco.bairro</td>
                                         <td class="type">string</td>
-                                        <td>Não</td>
+                                        <td>❌ Não</td>
                                         <td>Bairro</td>
                                     </tr>
                                     <tr>
                                         <td>endereco.referencia</td>
                                         <td class="type">string</td>
-                                        <td>Não</td>
+                                        <td>❌ Não</td>
                                         <td>Ponto de referência</td>
                                     </tr>
                                     <tr>
                                         <td>itens</td>
                                         <td class="type">object</td>
-                                        <td>Não</td>
+                                        <td>❌ Não</td>
                                         <td>Itens do pedido</td>
                                     </tr>
                                     <tr>
                                         <td>motoboy</td>
                                         <td class="type">object</td>
-                                        <td>Não</td>
+                                        <td>❌ Não</td>
                                         <td>Informações do motoboy</td>
+                                    </tr>
+                                    <tr>
+                                        <td>status</td>
+                                        <td class="type">string</td>
+                                        <td>❌ Não</td>
+                                        <td>Status do pedido (padrão: "pendente")</td>
+                                    </tr>
+                                    <tr>
+                                        <td>estimatedDeliveryMinutes</td>
+                                        <td class="type">number</td>
+                                        <td>❌ Não</td>
+                                        <td>Tempo estimado de entrega em minutos (padrão: 30)</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -1000,6 +1018,7 @@ Content-Type: application/json</code></pre>
                             <h4>Resposta de Sucesso (200 OK)</h4>
                             <pre><code>{
   "-Nr98h12ad9": {
+    "id": 1001,
     "cliente": "João Silva",
     "endereco": {
       "bairro": "Centro",
@@ -1008,7 +1027,6 @@ Content-Type: application/json</code></pre>
       "rua": "Rua das Flores"
     },
     "estimatedDeliveryMinutes": 30,
-    "id": "0",
     "tipoPedido": "Entrega",
     "motoboy": {
       "id": "mb001",
@@ -1024,6 +1042,34 @@ Content-Type: application/json</code></pre>
         "nome": "Pizza Margherita",
         "qtd": 1,
         "preco": 42.9
+      }
+    }
+  },
+  "-Nr98h34bc0": {
+    "id": 1002,
+    "cliente": "Maria Santos",
+    "endereco": {
+      "bairro": "Centro",
+      "numero": "456",
+      "referencia": "",
+      "rua": "Av. Principal"
+    },
+    "estimatedDeliveryMinutes": 30,
+    "tipoPedido": "Retirada",
+    "motoboy": {
+      "id": "",
+      "nome": ""
+    },
+    "pagamento": "Cartão",
+    "status": "pendente",
+    "taxa": 0,
+    "telefone": "11988888888",
+    "valor_total": 35.5,
+    "itens": {
+      "item1": {
+        "nome": "Hambúrguer Artesanal",
+        "qtd": 2,
+        "preco": 35.5
       }
     }
   }
@@ -1087,14 +1133,15 @@ Content-Type: application/json</code></pre>
                             <h4>Resposta de Sucesso (200 OK)</h4>
                             <pre><code>{
   "-Nr98h12ad9": {
+    "id": 1001,
     "cliente": "João Silva",
     "endereco": { ... },
     "tipoPedido": "Entrega",
-    "id": 0,
     "status": "pendente",
     "valor_total": 42.90
   },
   "-Nr98h34bc0": {
+    "id": 1002,
     "cliente": "Maria Santos",
     "endereco": { ... },
     "tipoPedido": "Retirada",
@@ -1139,11 +1186,11 @@ const pedidoResponse = await fetch('https://apidelibery.onrender.com/pedido', {
     'Authorization': `Bearer ${token}`
   },
   body: JSON.stringify({
+    id: 1001,  // ← ID enviado pelo cliente
     cliente: 'João Silva',
     telefone: '11999999999',
     pagamento: 'Pix',
     tipoPedido: 'Entrega',
-    id: 0,
     taxa: 5,
     valor_total: 42.90,
     endereco: {
@@ -1167,9 +1214,10 @@ console.log(resultado);</code></pre>
             </div>
             
             <div class="example">
-                <h4>Exemplo 2: Criar Pedido de Retirada</h4>
+                <h4>Exemplo 2: Criar Pedido de Retirada com ID Diferente</h4>
                 <pre><code>// Pedido de retirada (tipoPedido: "Retirada")
 const pedidoRetirada = {
+  id: 1002,  // ← ID único enviado pelo cliente
   cliente: 'Maria Santos',
   telefone: '11988888888',
   pagamento: 'Cartão',
@@ -1261,7 +1309,7 @@ curl -H "Authorization: Bearer $TOKEN" \
         <!-- Footer -->
         <footer>
             <div class="container">
-                <p>API Pedidos v0.4 - Documentação: Novembro de 2025</p>
+                <p>API Pedidos v0.4 - Documentação gerada em Novembro de 2025</p>
                 <p><strong>URL Base:</strong> https://apidelibery.onrender.com</p>
             </div>
         </footer>
