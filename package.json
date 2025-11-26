@@ -1,0 +1,21 @@
+{
+  "name": "api-pedidos-documentation",
+  "version": "1.0.0",
+  "description": "Documentação da API Pedidos v0.4",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx serve -s . -l $PORT",
+    "build": "echo 'No build step needed for static site'"
+  },
+  "keywords": [
+    "api",
+    "documentation",
+    "pedidos",
+    "rest-api"
+  ],
+  "author": "Seu Nome",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
