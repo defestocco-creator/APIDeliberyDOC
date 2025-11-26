@@ -1,8 +1,4 @@
-# Arquivo README.md para Download
 
-Crie um arquivo chamado `README.md` com o seguinte conteúdo:
-
-```markdown
 # 🚀 API Pedidos v0.4 - Documentação Completa
 
 ## 📋 Visão Geral
@@ -473,7 +469,7 @@ Para criar um pedido, apenas estes campos são obrigatórios:
 {
   "erro": "Token inválido ou expirado"
 }
-
+```
 **📝 Dados inválidos:**
 ```json
 {
@@ -511,25 +507,6 @@ Em caso de problemas ou dúvidas:
 
 **📅 Última atualização:** Novembro 2025  
 **🔄 Versão da API:** 0.4  
-**👨‍💻 Mantido por:** [Seu Nome/Equipe]
+**👨‍💻 Mantido por:** Diemgot
 
 ```
-
-## 📥 Como usar no GitHub:
-
-1. **Crie um novo arquivo** no seu repositório chamado `README.md`
-2. **Copie e cole** todo o conteúdo acima
-3. **Salve e faça commit**
-4. **O GitHub vai renderizar automaticamente** com toda a formatação
-
-## 🎯 Destaques desta versão:
-
-- ✅ **Compatível total com GitHub** - sem erros de formatação
-- ✅ **Ícones e emojis** para melhor visualização
-- ✅ **Tabelas organizadas** para esquemas de dados
-- ✅ **Exemplos em múltiplas linguagens** (JavaScript, cURL, Python)
-- ✅ **Seção de tratamento de erros** completa
-- ✅ **Sintaxe de código correta** com highlighting
-- ✅ **Estrutura hierárquica clara**
-
-Agora você pode fazer o download deste conteúdo e usar diretamente no seu repositório GitHub! 🚀
