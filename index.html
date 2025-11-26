@@ -1,0 +1,1403 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Pedidos v0.4 - Documentação Completa</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4990e2;
+            --secondary-color: #3a3a3a;
+            --accent-color: #85b7ef;
+            --light-bg: #f5f7fa;
+            --border-color: #e1e4e8;
+            --sidebar-width: 280px;
+            --header-height: 70px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: var(--light-bg);
+            display: flex;
+        }
+        
+        /* Sidebar Styles */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: linear-gradient(180deg, var(--primary-color), #2c5aa0);
+            color: white;
+            height: 100vh;
+            position: fixed;
+            overflow-y: auto;
+            padding: 1rem;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+        
+        .sidebar-header {
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            margin-bottom: 1rem;
+        }
+        
+        .sidebar-header h2 {
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .sidebar-header h2 i {
+            color: #ffd700;
+        }
+        
+        .search-box {
+            margin: 1rem 0;
+            position: relative;
+        }
+        
+        .search-box input {
+            width: 100%;
+            padding: 0.7rem 1rem 0.7rem 2.5rem;
+            border: none;
+            border-radius: 5px;
+            background: rgba(255,255,255,0.9);
+            font-size: 0.9rem;
+        }
+        
+        .search-box i {
+            position: absolute;
+            left: 0.8rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+        }
+        
+        .sidebar-nav {
+            list-style: none;
+        }
+        
+        .nav-section {
+            margin-bottom: 1.5rem;
+        }
+        
+        .nav-section-title {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            font-weight: bold;
+            margin-bottom: 0.7rem;
+            color: rgba(255,255,255,0.7);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .nav-item {
+            margin-bottom: 0.5rem;
+        }
+        
+        .nav-item a {
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            padding: 0.7rem 1rem;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: all 0.3s;
+            font-size: 0.95rem;
+        }
+        
+        .nav-item a:hover {
+            background: rgba(255,255,255,0.1);
+        }
+        
+        .nav-item a.active {
+            background: rgba(255,255,255,0.2);
+            font-weight: bold;
+        }
+        
+        .nav-item a i {
+            width: 20px;
+            text-align: center;
+        }
+        
+        .nav-badge {
+            background: rgba(255,255,255,0.2);
+            padding: 0.2rem 0.5rem;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            margin-left: auto;
+        }
+        
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            padding: 2rem;
+        }
+        
+        .mobile-header {
+            display: none;
+            background: var(--primary-color);
+            color: white;
+            padding: 1rem;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 999;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .mobile-menu-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        
+        .section {
+            background-color: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            border-left: 4px solid var(--primary-color);
+            scroll-margin-top: 2rem;
+        }
+        
+        .section h2 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+        }
+        
+        .section h2 i {
+            color: var(--accent-color);
+        }
+        
+        .endpoint {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background-color: #f9fafb;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .endpoint-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .method {
+            display: inline-block;
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            color: white;
+            font-weight: bold;
+            margin-right: 1rem;
+            min-width: 80px;
+            text-align: center;
+        }
+        
+        .method.get {
+            background-color: #61affe;
+        }
+        
+        .method.post {
+            background-color: #49cc90;
+        }
+        
+        .method.put {
+            background-color: #fca130;
+        }
+        
+        .method.delete {
+            background-color: #f93e3e;
+        }
+        
+        .endpoint-path {
+            font-family: monospace;
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+        
+        .endpoint-description {
+            margin-bottom: 1rem;
+            color: #555;
+        }
+        
+        .auth-badge {
+            display: inline-block;
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-left: 1rem;
+        }
+        
+        .auth-badge.protected {
+            background-color: #ffebee;
+            color: #c62828;
+        }
+        
+        .auth-badge.public {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+        }
+        
+        .request-response {
+            margin-top: 1.5rem;
+        }
+        
+        .tab-container {
+            margin-top: 1rem;
+        }
+        
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 1rem;
+        }
+        
+        .tab {
+            padding: 0.7rem 1.5rem;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .tab.active {
+            border-bottom: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        pre {
+            background-color: #f6f8fa;
+            padding: 1rem;
+            border-radius: 6px;
+            overflow-x: auto;
+            border: 1px solid var(--border-color);
+        }
+        
+        code {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.9rem;
+        }
+        
+        .schema-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        
+        .schema-table th, .schema-table td {
+            padding: 0.8rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .schema-table th {
+            background-color: #f1f3f4;
+            font-weight: bold;
+        }
+        
+        .required {
+            color: #d32f2f;
+        }
+        
+        .type {
+            color: #1976d2;
+            font-family: monospace;
+        }
+        
+        .example {
+            margin-top: 1rem;
+        }
+        
+        .example h4 {
+            margin-bottom: 0.5rem;
+            color: var(--secondary-color);
+        }
+        
+        footer {
+            text-align: center;
+            padding: 2rem 0;
+            margin-top: 2rem;
+            color: #666;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .update-badge {
+            background-color: #fff3e0;
+            color: #ef6c00;
+            padding: 0.3rem 0.8rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-left: 0.5rem;
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        
+        .feature-card {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .feature-card h4 {
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            margin-bottom: 0.7rem;
+            color: var(--primary-color);
+        }
+        
+        .quick-actions {
+            display: flex;
+            gap: 1rem;
+            margin: 1.5rem 0;
+            flex-wrap: wrap;
+        }
+        
+        .quick-action-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.7rem 1.2rem;
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: background 0.3s;
+        }
+        
+        .quick-action-btn:hover {
+            background: #3a7bd5;
+        }
+        
+        .back-to-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            z-index: 100;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .back-to-top.visible {
+            opacity: 1;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s;
+            }
+            
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .mobile-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 1rem;
+            }
+            
+            .endpoint-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .method {
+                margin-bottom: 0.5rem;
+            }
+            
+            .quick-actions {
+                flex-direction: column;
+            }
+            
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Mobile Header -->
+    <div class="mobile-header">
+        <button class="mobile-menu-btn" id="mobileMenuBtn">
+            <i class="fas fa-bars"></i>
+        </button>
+        <h1>API Documentation</h1>
+    </div>
+
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h2><i class="fas fa-book"></i> API Documentation</h2>
+            <p>v0.4 - Pedidos</p>
+        </div>
+        
+        <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" placeholder="Pesquisar na documentação...">
+        </div>
+        
+        <ul class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title">
+                    <i class="fas fa-home"></i> Introdução
+                </div>
+                <li class="nav-item">
+                    <a href="#overview" class="nav-link active">
+                        <i class="fas fa-info-circle"></i> Visão Geral
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#base-url" class="nav-link">
+                        <i class="fas fa-link"></i> URL Base
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#authentication" class="nav-link">
+                        <i class="fas fa-key"></i> Autenticação
+                    </a>
+                </li>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-section-title">
+                    <i class="fas fa-plug"></i> Endpoints
+                </div>
+                <li class="nav-item">
+                    <a href="#health-check" class="nav-link">
+                        <i class="fas fa-heartbeat"></i> Health Check
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#login" class="nav-link">
+                        <i class="fas fa-sign-in-alt"></i> Login
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#create-order" class="nav-link">
+                        <i class="fas fa-plus-circle"></i> Criar Pedido
+                        <span class="nav-badge">POST</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#list-orders" class="nav-link">
+                        <i class="fas fa-list"></i> Listar Pedidos
+                        <span class="nav-badge">GET</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#orders-by-date" class="nav-link">
+                        <i class="fas fa-calendar"></i> Pedidos por Data
+                        <span class="nav-badge">GET</span>
+                    </a>
+                </li>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-section-title">
+                    <i class="fas fa-code"></i> Exemplos
+                </div>
+                <li class="nav-item">
+                    <a href="#examples" class="nav-link">
+                        <i class="fas fa-laptop-code"></i> Códigos de Exemplo
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#curl-examples" class="nav-link">
+                        <i class="fas fa-terminal"></i> Exemplos cURL
+                    </a>
+                </li>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-section-title">
+                    <i class="fas fa-cogs"></i> Recursos
+                </div>
+                <li class="nav-item">
+                    <a href="#status-codes" class="nav-link">
+                        <i class="fas fa-exchange-alt"></i> Códigos de Status
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#schemas" class="nav-link">
+                        <i class="fas fa-database"></i> Esquemas de Dados
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#faq" class="nav-link">
+                        <i class="fas fa-question-circle"></i> FAQ
+                    </a>
+                </li>
+            </div>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Header -->
+        <header style="background: linear-gradient(135deg, var(--primary-color), var(--accent-color)); color: white; padding: 2rem; border-radius: 8px; margin-bottom: 2rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+                <div>
+                    <h1 style="font-size: 2.5rem; margin-bottom: 0.5rem;">API Pedidos v0.4</h1>
+                    <p style="font-size: 1.1rem; opacity: 0.9;">Documentação completa da API de gerenciamento de pedidos</p>
+                </div>
+                <div style="background-color: rgba(255, 255, 255, 0.2); padding: 0.5rem 1rem; border-radius: 20px; font-weight: bold;">
+                    Versão 0.4
+                </div>
+            </div>
+            
+            <div class="quick-actions">
+                <button class="quick-action-btn" onclick="scrollToSection('create-order')">
+                    <i class="fas fa-rocket"></i> Começar Agora
+                </button>
+                <button class="quick-action-btn" onclick="scrollToSection('examples')">
+                    <i class="fas fa-code"></i> Ver Exemplos
+                </button>
+                <button class="quick-action-btn" onclick="scrollToSection('curl-examples')">
+                    <i class="fas fa-terminal"></i> Testar com cURL
+                </button>
+            </div>
+        </header>
+
+        <!-- Overview Section -->
+        <section id="overview" class="section">
+            <h2><i class="fas fa-info-circle"></i> Visão Geral</h2>
+            <p>A API Pedidos v0.4 é uma solução completa para gerenciamento de pedidos, implementada com Node.js, Express, JWT para autenticação e Firebase Realtime Database como banco de dados.</p>
+            
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h4><i class="fas fa-shield-alt"></i> Segurança</h4>
+                    <p>Autenticação JWT para endpoints protegidos com tokens válidos por 10 horas.</p>
+                </div>
+                <div class="feature-card">
+                    <h4><i class="fas fa-database"></i> Armazenamento</h4>
+                    <p>Firebase Realtime Database com organização automática de pedidos por data.</p>
+                </div>
+                <div class="feature-card">
+                    <h4><i class="fas fa-truck"></i> Flexibilidade</h4>
+                    <p>Suporte a pedidos de entrega e retirada com o campo <code>tipoPedido</code>.</p>
+                </div>
+                <div class="feature-card">
+                    <h4><i class="fas fa-check-circle"></i> Validação</h4>
+                    <p>Validação robusta de dados de entrada com respostas de erro detalhadas.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Base URL Section -->
+        <section id="base-url" class="section">
+            <h2><i class="fas fa-link"></i> URL Base</h2>
+            <p>Todas as requisições devem ser feitas para a seguinte URL base:</p>
+            <pre><code>https://apidelibery.onrender.com</code></pre>
+        </section>
+
+        <!-- Authentication Section -->
+        <section id="authentication" class="section">
+            <h2><i class="fas fa-key"></i> Autenticação</h2>
+            <p>A API utiliza autenticação baseada em tokens JWT (JSON Web Tokens). Para acessar endpoints protegidos, você deve:</p>
+            
+            <ol>
+                <li>Fazer login usando o endpoint <code>/login</code> para obter um token</li>
+                <li>Incluir o token no cabeçalho <code>Authorization</code> de todas as requisições subsequentes</li>
+            </ol>
+            
+            <p><strong>Formato do cabeçalho:</strong></p>
+            <pre><code>Authorization: Bearer SEU_TOKEN_JWT_AQUI</code></pre>
+            
+            <p>Os tokens têm validade de 10 horas.</p>
+        </section>
+
+        <!-- Health Check Endpoint -->
+        <section id="health-check" class="section">
+            <h2><i class="fas fa-heartbeat"></i> Health Check</h2>
+            
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="endpoint-path">/</span>
+                    <span class="auth-badge public">Público</span>
+                </div>
+                <div class="endpoint-description">
+                    <p>Endpoint de health check da API. Retorna informações básicas sobre o status da aplicação.</p>
+                </div>
+                
+                <div class="request-response">
+                    <div class="tab-container">
+                        <div class="tabs">
+                            <div class="tab active" data-tab="response-health">Resposta</div>
+                        </div>
+                        
+                        <div class="tab-content active" id="response-health">
+                            <h4>Exemplo de Resposta (200 OK)</h4>
+                            <pre><code>{
+  "ok": true,
+  "message": "API Pedidos v0.4 rodando — JWT + Firebase",
+  "pastaHoje": "PEDIDOS_MANUAIS_26112025",
+  "timestamp": "2025-11-26T10:30:00.000Z"
+}</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Login Endpoint -->
+        <section id="login" class="section">
+            <h2><i class="fas fa-sign-in-alt"></i> Login</h2>
+            
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="endpoint-path">/login</span>
+                    <span class="auth-badge public">Público</span>
+                </div>
+                <div class="endpoint-description">
+                    <p>Autentica um usuário e retorna um token JWT para acesso aos endpoints protegidos.</p>
+                </div>
+                
+                <div class="request-response">
+                    <div class="tab-container">
+                        <div class="tabs">
+                            <div class="tab active" data-tab="request-login">Requisição</div>
+                            <div class="tab" data-tab="response-login">Resposta</div>
+                        </div>
+                        
+                        <div class="tab-content active" id="request-login">
+                            <h4>Corpo da Requisição</h4>
+                            <pre><code>{
+  "usuario": "admin",
+  "senha": "123"
+}</code></pre>
+                            
+                            <h4>Parâmetros</h4>
+                            <table class="schema-table">
+                                <thead>
+                                    <tr>
+                                        <th>Parâmetro</th>
+                                        <th>Tipo</th>
+                                        <th>Obrigatório</th>
+                                        <th>Descrição</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>usuario</td>
+                                        <td class="type">string</td>
+                                        <td class="required">Sim</td>
+                                        <td>Nome de usuário para autenticação</td>
+                                    </tr>
+                                    <tr>
+                                        <td>senha</td>
+                                        <td class="type">string</td>
+                                        <td class="required">Sim</td>
+                                        <td>Senha do usuário</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <div class="tab-content" id="response-login">
+                            <h4>Resposta de Sucesso (200 OK)</h4>
+                            <pre><code>{
+  "ok": true,
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}</code></pre>
+                            
+                            <h4>Resposta de Erro (401 Unauthorized)</h4>
+                            <pre><code>{
+  "erro": "Usuário ou senha incorretos"
+}</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Create Order Endpoint -->
+        <section id="create-order" class="section">
+            <h2><i class="fas fa-plus-circle"></i> Criar Pedido</h2>
+            
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="endpoint-path">/pedido</span>
+                    <span class="auth-badge protected">Protegido</span>
+                </div>
+                <div class="endpoint-description">
+                    <p>Cria um novo pedido manual no sistema. O pedido é automaticamente armazenado na pasta do dia atual no Firebase.</p>
+                    <p><strong>Novo:</strong> Campo <code>tipoPedido</code> para definir se é <code>Entrega</code> ou <code>Retirada</code>.</p>
+                </div>
+                
+                <div class="request-response">
+                    <div class="tab-container">
+                        <div class="tabs">
+                            <div class="tab active" data-tab="request-pedido">Requisição</div>
+                            <div class="tab" data-tab="response-pedido">Resposta</div>
+                            <div class="tab" data-tab="schema-pedido">Esquema</div>
+                        </div>
+                        
+                        <div class="tab-content active" id="request-pedido">
+                            <h4>Cabeçalhos</h4>
+                            <pre><code>Authorization: Bearer SEU_TOKEN_JWT_AQUI
+Content-Type: application/json</code></pre>
+                            
+                            <h4>Corpo da Requisição</h4>
+                            <pre><code>{
+  "cliente": "João Silva",
+  "telefone": "11999999999",
+  "pagamento": "Pix",
+  "taxa": 5,
+  "valor_total": 42.90,
+  "tipoPedido": "Entrega",
+  "endereco": {
+    "rua": "Rua das Flores",
+    "numero": "123",
+    "bairro": "Centro",
+    "referencia": "Próximo à praça"
+  },
+  "itens": {
+    "item1": {
+      "nome": "Pizza Margherita",
+      "qtd": 1,
+      "preco": 42.90
+    }
+  },
+  "motoboy": {
+    "id": "mb001",
+    "nome": "Carlos"
+  }
+}</code></pre>
+                        </div>
+                        
+                        <div class="tab-content" id="response-pedido">
+                            <h4>Resposta de Sucesso (201 Created)</h4>
+                            <pre><code>{
+  "ok": true,
+  "firebase_id": "-Nr98h12ad9",
+  "pasta": "PEDIDOS_MANUAIS_26112025",
+  "pedido": {
+    "cliente": "João Silva",
+    "endereco": {
+      "bairro": "Centro",
+      "numero": "123",
+      "referencia": "Próximo à praça",
+      "rua": "Rua das Flores"
+    },
+    "estimatedDeliveryMinutes": 30,
+    "id": "1732618800000",
+    "tipoPedido": "Entrega",
+    "motoboy": {
+      "id": "mb001",
+      "nome": "Carlos"
+    },
+    "pagamento": "Pix",
+    "status": "pendente",
+    "taxa": 5,
+    "telefone": "11999999999",
+    "valor_total": 42.9,
+    "itens": {
+      "item1": {
+        "nome": "Pizza Margherita",
+        "qtd": 1,
+        "preco": 42.9
+      }
+    }
+  }
+}</code></pre>
+                            
+                            <h4>Resposta de Erro (400 Bad Request)</h4>
+                            <pre><code>{
+  "erro": "cliente é obrigatório e deve ser uma string."
+}</code></pre>
+                        </div>
+                        
+                        <div class="tab-content" id="schema-pedido">
+                            <h4>Esquema do Pedido</h4>
+                            <table class="schema-table">
+                                <thead>
+                                    <tr>
+                                        <th>Campo</th>
+                                        <th>Tipo</th>
+                                        <th>Obrigatório</th>
+                                        <th>Descrição</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>cliente</td>
+                                        <td class="type">string</td>
+                                        <td class="required">Sim</td>
+                                        <td>Nome do cliente</td>
+                                    </tr>
+                                    <tr>
+                                        <td>telefone</td>
+                                        <td class="type">string</td>
+                                        <td>Não</td>
+                                        <td>Telefone do cliente</td>
+                                    </tr>
+                                    <tr>
+                                        <td>pagamento</td>
+                                        <td class="type">string</td>
+                                        <td>Não</td>
+                                        <td>Forma de pagamento (Pix, Cartão, Dinheiro, Outros)</td>
+                                    </tr>
+                                    <tr>
+                                        <td>taxa</td>
+                                        <td class="type">number</td>
+                                        <td>Não</td>
+                                        <td>Taxa de entrega</td>
+                                    </tr>
+                                    <tr>
+                                        <td>valor_total</td>
+                                        <td class="type">number</td>
+                                        <td>Não</td>
+                                        <td>Valor total do pedido</td>
+                                    </tr>
+                                    <tr>
+                                        <td>tipoPedido <span class="update-badge">NOVO</span></td>
+                                        <td class="type">string</td>
+                                        <td>Não</td>
+                                        <td>Tipo do pedido: "Entrega" ou "Retirada" (padrão: "Entrega")</td>
+                                    </tr>
+                                    <tr>
+                                        <td>endereco</td>
+                                        <td class="type">object</td>
+                                        <td class="required">Sim</td>
+                                        <td>Endereço de entrega (obrigatório mesmo para retirada)</td>
+                                    </tr>
+                                    <tr>
+                                        <td>endereco.rua</td>
+                                        <td class="type">string</td>
+                                        <td>Não</td>
+                                        <td>Nome da rua</td>
+                                    </tr>
+                                    <tr>
+                                        <td>endereco.numero</td>
+                                        <td class="type">string</td>
+                                        <td>Não</td>
+                                        <td>Número do endereço</td>
+                                    </tr>
+                                    <tr>
+                                        <td>endereco.bairro</td>
+                                        <td class="type">string</td>
+                                        <td>Não</td>
+                                        <td>Bairro</td>
+                                    </tr>
+                                    <tr>
+                                        <td>endereco.referencia</td>
+                                        <td class="type">string</td>
+                                        <td>Não</td>
+                                        <td>Ponto de referência</td>
+                                    </tr>
+                                    <tr>
+                                        <td>itens</td>
+                                        <td class="type">object</td>
+                                        <td>Não</td>
+                                        <td>Itens do pedido</td>
+                                    </tr>
+                                    <tr>
+                                        <td>motoboy</td>
+                                        <td class="type">object</td>
+                                        <td>Não</td>
+                                        <td>Informações do motoboy</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- List Orders Endpoint -->
+        <section id="list-orders" class="section">
+            <h2><i class="fas fa-list"></i> Listar Pedidos</h2>
+            
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="endpoint-path">/pedidos</span>
+                    <span class="auth-badge protected">Protegido</span>
+                </div>
+                <div class="endpoint-description">
+                    <p>Retorna todos os pedidos do dia atual, organizados pela pasta automática no Firebase.</p>
+                </div>
+                
+                <div class="request-response">
+                    <div class="tab-container">
+                        <div class="tabs">
+                            <div class="tab active" data-tab="response-pedidos">Resposta</div>
+                        </div>
+                        
+                        <div class="tab-content active" id="response-pedidos">
+                            <h4>Cabeçalhos</h4>
+                            <pre><code>Authorization: Bearer SEU_TOKEN_JWT_AQUI</code></pre>
+                            
+                            <h4>Resposta de Sucesso (200 OK)</h4>
+                            <pre><code>{
+  "-Nr98h12ad9": {
+    "cliente": "João Silva",
+    "endereco": {
+      "bairro": "Centro",
+      "numero": "123",
+      "referencia": "Próximo à praça",
+      "rua": "Rua das Flores"
+    },
+    "estimatedDeliveryMinutes": 30,
+    "id": "1732618800000",
+    "tipoPedido": "Entrega",
+    "motoboy": {
+      "id": "mb001",
+      "nome": "Carlos"
+    },
+    "pagamento": "Pix",
+    "status": "pendente",
+    "taxa": 5,
+    "telefone": "11999999999",
+    "valor_total": 42.9,
+    "itens": {
+      "item1": {
+        "nome": "Pizza Margherita",
+        "qtd": 1,
+        "preco": 42.9
+      }
+    }
+  }
+}</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Orders by Date Endpoint -->
+        <section id="orders-by-date" class="section">
+            <h2><i class="fas fa-calendar"></i> Pedidos por Data</h2>
+            
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="endpoint-path">/pedidos/:data</span>
+                    <span class="auth-badge protected">Protegido</span>
+                </div>
+                <div class="endpoint-description">
+                    <p>Retorna todos os pedidos de uma data específica. O parâmetro <code>:data</code> deve estar no formato DDMMAAAA.</p>
+                </div>
+                
+                <div class="request-response">
+                    <div class="tab-container">
+                        <div class="tabs">
+                            <div class="tab active" data-tab="request-pedidos-data">Requisição</div>
+                            <div class="tab" data-tab="response-pedidos-data">Resposta</div>
+                        </div>
+                        
+                        <div class="tab-content active" id="request-pedidos-data">
+                            <h4>Cabeçalhos</h4>
+                            <pre><code>Authorization: Bearer SEU_TOKEN_JWT_AQUI</code></pre>
+                            
+                            <h4>Parâmetros de URL</h4>
+                            <table class="schema-table">
+                                <thead>
+                                    <tr>
+                                        <th>Parâmetro</th>
+                                        <th>Tipo</th>
+                                        <th>Obrigatório</th>
+                                        <th>Descrição</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>data</td>
+                                        <td class="type">string</td>
+                                        <td class="required">Sim</td>
+                                        <td>Data no formato DDMMAAAA (ex: 26112025)</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            
+                            <h4>Exemplo de URL</h4>
+                            <pre><code>GET https://apidelibery.onrender.com/pedidos/26112025</code></pre>
+                        </div>
+                        
+                        <div class="tab-content" id="response-pedidos-data">
+                            <h4>Resposta de Sucesso (200 OK)</h4>
+                            <pre><code>{
+  "-Nr98h12ad9": {
+    "cliente": "João Silva",
+    "endereco": { ... },
+    "tipoPedido": "Entrega",
+    "status": "pendente",
+    "valor_total": 42.90
+  },
+  "-Nr98h34bc0": {
+    "cliente": "Maria Santos",
+    "endereco": { ... },
+    "tipoPedido": "Retirada",
+    "status": "entregue",
+    "valor_total": 35.50
+  }
+}</code></pre>
+                            
+                            <h4>Resposta para Data sem Pedidos (200 OK)</h4>
+                            <pre><code>{}</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Examples Section -->
+        <section id="examples" class="section">
+            <h2><i class="fas fa-laptop-code"></i> Exemplos de Uso</h2>
+            
+            <div class="example">
+                <h4>Exemplo 1: Autenticação e Criação de Pedido de Entrega</h4>
+                <pre><code>// 1. Fazer login para obter token
+const loginResponse = await fetch('https://apidelibery.onrender.com/login', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    usuario: 'admin',
+    senha: '123'
+  })
+});
+
+const { token } = await loginResponse.json();
+
+// 2. Criar um pedido de entrega usando o token
+const pedidoResponse = await fetch('https://apidelibery.onrender.com/pedido', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${token}`
+  },
+  body: JSON.stringify({
+    cliente: 'João Silva',
+    telefone: '11999999999',
+    pagamento: 'Pix',
+    tipoPedido: 'Entrega',
+    taxa: 5,
+    valor_total: 42.90,
+    endereco: {
+      rua: 'Rua das Flores',
+      numero: '123',
+      bairro: 'Centro',
+      referencia: 'Próximo à praça'
+    },
+    itens: {
+      item1: {
+        nome: 'Pizza Margherita',
+        qtd: 1,
+        preco: 42.90
+      }
+    }
+  })
+});
+
+const resultado = await pedidoResponse.json();
+console.log(resultado);</code></pre>
+            </div>
+            
+            <div class="example">
+                <h4>Exemplo 2: Criar Pedido de Retirada</h4>
+                <pre><code>// Pedido de retirada (tipoPedido: "Retirada")
+const pedidoRetirada = {
+  cliente: 'Maria Santos',
+  telefone: '11988888888',
+  pagamento: 'Cartão',
+  tipoPedido: 'Retirada',
+  valor_total: 35.50,
+  endereco: {
+    rua: 'Av. Principal',
+    numero: '456',
+    bairro: 'Centro',
+    referencia: ''
+  },
+  itens: {
+    item1: {
+      nome: 'Hambúrguer Artesanal',
+      qtd: 2,
+      preco: 35.50
+    }
+  }
+};
+
+// Enviar requisição
+const response = await fetch('https://apidelibery.onrender.com/pedido', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${token}`
+  },
+  body: JSON.stringify(pedidoRetirada)
+});</code></pre>
+            </div>
+        </section>
+
+        <!-- cURL Examples Section -->
+        <section id="curl-examples" class="section">
+            <h2><i class="fas fa-terminal"></i> Exemplos cURL</h2>
+            
+            <div class="example">
+                <h4>Exemplo 3: Listar Pedidos com cURL</h4>
+                <pre><code># Obter token
+TOKEN=$(curl -s -X POST https://apidelibery.onrender.com/login \
+  -H "Content-Type: application/json" \
+  -d '{"usuario":"admin","senha":"123"}' | jq -r '.token')
+
+# Listar pedidos do dia
+curl -H "Authorization: Bearer $TOKEN" \
+  https://apidelibery.onrender.com/pedidos
+
+# Listar pedidos de uma data específica
+curl -H "Authorization: Bearer $TOKEN" \
+  https://apidelibery.onrender.com/pedidos/26112025</code></pre>
+            </div>
+        </section>
+
+        <!-- Status Codes Section -->
+        <section id="status-codes" class="section">
+            <h2><i class="fas fa-exchange-alt"></i> Códigos de Status</h2>
+            <table class="schema-table">
+                <thead>
+                    <tr>
+                        <th>Código</th>
+                        <th>Descrição</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>200</td>
+                        <td>OK - Requisição bem-sucedida</td>
+                    </tr>
+                    <tr>
+                        <td>201</td>
+                        <td>Created - Recurso criado com sucesso</td>
+                    </tr>
+                    <tr>
+                        <td>400</td>
+                        <td>Bad Request - Dados da requisição inválidos</td>
+                    </tr>
+                    <tr>
+                        <td>401</td>
+                        <td>Unauthorized - Token inválido ou não fornecido</td>
+                    </tr>
+                    <tr>
+                        <td>500</td>
+                        <td>Internal Server Error - Erro no servidor</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Footer -->
+        <footer>
+            <div class="container">
+                <p>API Pedidos v0.4 - Documentação gerada em Novembro de 2025</p>
+                <p><strong>URL Base:</strong> https://apidelibery.onrender.com</p>
+            </div>
+        </footer>
+    </main>
+
+    <!-- Back to Top Button -->
+    <button class="back-to-top" id="backToTop">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script>
+        // Mobile menu functionality
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const sidebar = document.getElementById('sidebar');
+        
+        mobileMenuBtn.addEventListener('click', () => {
+            sidebar.classList.toggle('open');
+        });
+        
+        // Tab functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabs = document.querySelectorAll('.tab');
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const tabContainer = this.closest('.tab-container');
+                    const tabId = this.getAttribute('data-tab');
+                    
+                    // Remove active class from all tabs in this container
+                    tabContainer.querySelectorAll('.tab').forEach(t => {
+                        t.classList.remove('active');
+                    });
+                    
+                    // Remove active class from all tab contents in this container
+                    tabContainer.querySelectorAll('.tab-content').forEach(c => {
+                        c.classList.remove('active');
+                    });
+                    
+                    // Add active class to clicked tab and corresponding content
+                    this.classList.add('active');
+                    document.getElementById(tabId).classList.add('active');
+                });
+            });
+            
+            // Navigation active state
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('.section');
+            
+            window.addEventListener('scroll', () => {
+                let current = '';
+                
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    const sectionHeight = section.clientHeight;
+                    
+                    if (scrollY >= (sectionTop - 100)) {
+                        current = section.getAttribute('id');
+                    }
+                });
+                
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href') === `#${current}`) {
+                        link.classList.add('active');
+                    }
+                });
+                
+                // Back to top button visibility
+                const backToTop = document.getElementById('backToTop');
+                if (window.scrollY > 300) {
+                    backToTop.classList.add('visible');
+                } else {
+                    backToTop.classList.remove('visible');
+                }
+            });
+            
+            // Smooth scrolling for navigation links
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetId = link.getAttribute('href');
+                    const targetSection = document.querySelector(targetId);
+                    
+                    window.scrollTo({
+                        top: targetSection.offsetTop - 20,
+                        behavior: 'smooth'
+                    });
+                    
+                    // Close mobile menu if open
+                    if (window.innerWidth <= 1024) {
+                        sidebar.classList.remove('open');
+                    }
+                });
+            });
+            
+            // Back to top functionality
+            document.getElementById('backToTop').addEventListener('click', () => {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            });
+            
+            // Search functionality
+            const searchInput = document.getElementById('searchInput');
+            searchInput.addEventListener('input', (e) => {
+                const searchTerm = e.target.value.toLowerCase();
+                const sections = document.querySelectorAll('.section');
+                
+                sections.forEach(section => {
+                    const sectionText = section.textContent.toLowerCase();
+                    if (sectionText.includes(searchTerm)) {
+                        section.style.display = 'block';
+                    } else {
+                        section.style.display = 'none';
+                    }
+                });
+            });
+        });
+        
+        // Function to scroll to specific section
+        function scrollToSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            if (section) {
+                window.scrollTo({
+                    top: section.offsetTop - 20,
+                    behavior: 'smooth'
+                });
+            }
+        }
+        
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (window.innerWidth <= 1024 && 
+                !sidebar.contains(e.target) && 
+                !mobileMenuBtn.contains(e.target)) {
+                sidebar.classList.remove('open');
+            }
+        });
+    </script>
+</body>
+</html>
